@@ -1,0 +1,112 @@
+<html>
+    <head>
+        <title>Full Metal</title>
+        <link rel="stylesheet" href="style/main_style.css">
+    </head>
+    <body>
+        <div id="main_player"></div>
+        
+
+    </body>
+    <script>
+        var x = 200;
+        var y = 700;
+        var speed = 0, jumpSpeed = 0, myCounter = 0;
+        var jump = false, reachedTop = false, weapon1 = false, move = false;
+    
+        var enemySpeed = 20;
+    
+        var urlImage = 'url("images/characters/edward/edwardelricBase.png")';
+    
+        function setPlayer(x, y) {
+            var div = document.getElementById("main_player");
+    
+            div.style.marginLeft = x + "px";
+            div.style.marginTop = y + "px";
+            div.style.backgroundImage = urlImage;
+        }
+    
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'ArrowUp' && !jump) {
+                jump = true;
+                jumpSpeed = 50;
+                console.log("Jump");
+            }
+            if (event.key === 'ArrowRight') {
+                console.log("Right");
+                move = true;
+                speed = 20;
+            }
+            if (event.key === 'ArrowLeft') {
+                console.log("Left");
+                move = true;
+                speed = -20;
+            }
+            if (event.key === "1" && !jump) {
+                console.log("WEAPON1");
+                weapon1 = true;
+            }
+        });
+    
+        function handleMovement() {
+            if (move) {
+                x += speed;
+                urlImage = (urlImage.includes('edwardelricBase.png')) 
+                    ? 'url("images/characters/edward/edwardelricBase2.png")' 
+                    : 'url("images/characters/edward/edwardelricBase.png")';
+                move = false;
+                speed = 0;
+            }
+        }
+    
+        function handleJump() {
+            if (jump) {
+                y -= jumpSpeed;
+                if (y < 500 && !reachedTop) {
+                    jumpSpeed *= -1;
+                    reachedTop = true;
+                }
+                if (reachedTop && y >= 700) {
+                    y = 700;
+                    jumpSpeed = 0;
+                    jump = false;
+                    reachedTop = false;
+                    urlImage = 'url("images/characters/edward/edwardelricBase.png")';
+                } else {
+                    urlImage = 'url("images/characters/edward/edwardelricJump.png")';
+                }
+            }
+        }
+    
+        function handleWeapon1() {
+            if (weapon1) {
+                myCounter++;
+                if (myCounter < 5) {
+                    urlImage = 'url("images/characters/edward/edwardelricCallWeapon.png")';
+                } else if (myCounter < 10) {
+                    urlImage = 'url("images/characters/edward/edwardelricWeapon1.png")';
+                    weapon1 = false;
+                } else {
+                    myCounter = 0;
+                    weapon1 = false;
+                }
+            }
+        }
+    
+        var repaint = setInterval(function () {
+            handleMovement();
+            handleJump();
+            handleWeapon1();
+            setPlayer(x, y);
+        }, 100);
+    
+        setPlayer(x, y);
+    </script>
+    
+
+
+
+<script>
+    
+</script>
+</html>

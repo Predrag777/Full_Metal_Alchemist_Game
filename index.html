@@ -3,17 +3,18 @@
         <title>Full Metal</title>
         <link rel="stylesheet" href="style/main_style.css">
     </head>
-    <body>
+    <body id="body">
         <div id="main_player"></div>
         
 
     </body>
     <script>
         class Enemy {
-    constructor(x, y) {
+    constructor(id, x, y) {
         // Definisanje pozicija x i y
         this.x = x;
         this.y = y;
+        this.id = id
 
         // Boolean vrednosti za akcije
         this.move = false;
@@ -66,17 +67,25 @@
 
 
         var numberOfEnemy=2
-        
+        var enemiesList=[]
         for(let i=0;i<numberOfEnemy;i++){
+            const newEnemy=new Enemy(i, 400+i*100, 700)
+
             const enemy=document.createElement("div")
             enemy.classList.add("enemy")
             enemy.id=`${i}`
+            enemy.style.backgroundColor="green"
             
-            
-            enemy.style.marginLeft = "500px"
-            enemy.style.marginTop = "700px"
-        }
+            enemy.style.marginLeft = newEnemy.x+"px"
+            enemy.style.marginTop = newEnemy.y+"px"
 
+            enemy.style.width="100px"
+            enemy.style.height="200px"
+
+            document.getElementById("body").appendChild(enemy);
+            enemiesList.push(newEnemy)
+        }
+        console.log(enemiesList.length)
         var urlImage = 'url("images/characters/edward/edwardelricBase.png")';
     
         function setPlayer(x, y) {

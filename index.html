@@ -125,6 +125,7 @@ function setEnemy(id, x,y){
                 console.log("WEAPON1");
                 weapon1 = true;
             }
+            console.log("SS")
 
         });
     
@@ -172,20 +173,35 @@ function setEnemy(id, x,y){
                 }
             }
         }
+
+
+   
     
-        var repaint = setInterval(function () {
-            var ss=document.getElementById("enemy-1")
-            enemiesList[0].x-=20
-            ss.style.marginLeft=enemiesList[0].x+"px"
-            
-            handleMovement();
-            handleJump();
-            handleWeapon1();
-            setPlayer(x, y);
-        }, 100);
-    
+    function moveEnemies(id) {
+        var enemy1 = document.getElementById("enemy-"+id);
+
+        enemiesList[id-1].x -= enemySpeed;
+        enemy1.style.marginLeft = enemiesList[id-1].x + "px";
+    }
+
+
+    function enemyJump(id){
+        var enemy1=document.getElementById("enemy-"+id)
+        enemiesList[id-1].y-=enemySpeed
+        if(enemiesList[id-1].y<500 && !enemyReachTop)
+    }
+
+
+    var repaint = setInterval(function () {
+        moveEnemies(1);
+
+        handleMovement();
+        handleJump();
+        handleWeapon1();
         setPlayer(x, y);
-    </script>
+    }, 100);
+    setPlayer(x, y);
+</script>
     
 
 

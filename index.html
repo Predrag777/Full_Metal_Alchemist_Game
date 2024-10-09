@@ -73,8 +73,11 @@
         var y = 700;
         var speed = 0, jumpSpeed = 0, myCounter = 0;
         var jump = false, reachedTop = false, weapon1 = false, move = false;
-        var enemySpeed = 20, enemyJumpSpeed = 10;
+        var alchemyAttack=false
+
+        var enemySpeed = 20, enemyJumpSpeed = 40;
         var enemyJump = false, enemyReachTop = false;
+        
 
         var numberOfEnemy = 2;
         var enemiesList = [];
@@ -109,6 +112,9 @@
             }
             if (event.key === "1" && !jump) {
                 weapon1 = true;
+            }
+            if(event.key ==="a"){
+                attack=true
             }
         });
 
@@ -162,6 +168,22 @@
             updateEnemyPosition(id, enemiesList[id].x, enemiesList[id].y);
         }
 
+        function nextMove(myX, myY, x, y, jump, enemyJump){
+            if(x<myX+150){
+                return 2
+            }
+
+            if(x>myX+150){
+                return 1
+            }
+
+            if(alchemyAttack)
+                return 3
+
+            if(attack && x<myX+200)
+                return 2
+        }
+
         function jumpEnemies(id) {
             enemiesList[id].y -= enemyJumpSpeed;
             if (enemiesList[id].y < 500 && !enemyReachTop) {
@@ -178,9 +200,9 @@
         }
 
         var repaint = setInterval(function () {
-            //moveEnemies(0); // Korigovan indeks za prvog neprijatelja
-            jumpEnemies(0)
-            
+            moveEnemies(0); 
+            //jumpEnemies(0)
+            console.log(x+"     "+enemiesList[0].x)
             handleMovement();
             handleJump();
             handleWeapon1();

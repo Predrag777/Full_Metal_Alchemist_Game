@@ -5,61 +5,51 @@
     </head>
     <body id="body">
         <div id="main_player"></div>
-        
-
     </body>
     <script>
         class Enemy {
-    constructor(id, x, y) {
-        // Definisanje pozicija x i y
-        this.x = x;
-        this.y = y;
-        this.id = id
+            constructor(id, x, y) {
+                this.x = x;
+                this.y = y;
+                this.id = id;
+                this.move = false;
+                this.jump = false;
+                this.attack = false;
+            }
 
-        // Boolean vrednosti za akcije
-        this.move = false;
-        this.jump = false;
-        this.attack = false;
-    }
+            startMove() {
+                this.move = true;
+                console.log('Enemy started moving');
+            }
 
-    // Metoda za pomeranje neprijatelja
-    startMove() {
-        this.move = true;
-        console.log('Enemy started moving');
-    }
+            stopMove() {
+                this.move = false;
+                console.log('Enemy stopped moving');
+            }
 
-    stopMove() {
-        this.move = false;
-        console.log('Enemy stopped moving');
-    }
+            startJump() {
+                this.jump = true;
+                console.log('Enemy jumped');
+            }
 
-    // Metoda za skok
-    startJump() {
-        this.jump = true;
-        console.log('Enemy jumped');
-    }
+            stopJump() {
+                this.jump = false;
+                console.log('Enemy landed');
+            }
 
-    stopJump() {
-        this.jump = false;
-        console.log('Enemy landed');
-    }
+            startAttack() {
+                this.attack = true;
+                console.log('Enemy started attacking');
+            }
 
-    // Metoda za napad
-    startAttack() {
-        this.attack = true;
-        console.log('Enemy started attacking');
-    }
+            stopAttack() {
+                this.attack = false;
+                console.log('Enemy stopped attacking');
+            }
+        }
 
-    stopAttack() {
-        this.attack = false;
-        console.log('Enemy stopped attacking');
-    }
-}
-
-function setEnemy(id, x,y){
-    const enemy = document.createElement("div");
-
-
+        function createEnemy(id, x, y) {
+            const enemy = document.createElement("div");
             enemy.id = `enemy-${id}`;
             enemy.style.backgroundColor = "green";
             enemy.style.width = "100px"; 
@@ -68,67 +58,60 @@ function setEnemy(id, x,y){
             enemy.style.left = x + "px"; 
             enemy.style.top = y + "px"; 
             enemy.classList.add("enemy");
-
-
-            
-
             document.getElementById("body").appendChild(enemy);
-}
-    </script>
-    <script>
+        }
+
+        function updateEnemyPosition(id, x, y) {
+            const enemy = document.getElementById(`enemy-${id}`);
+            if (enemy) {
+                enemy.style.left = x + "px";
+                enemy.style.top = y + "px";
+            }
+        }
+
         var x = 200;
         var y = 700;
         var speed = 0, jumpSpeed = 0, myCounter = 0;
         var jump = false, reachedTop = false, weapon1 = false, move = false;
-    
-        var enemySpeed = 20;
-        var enemyJump = false, enemyReachTop = false, enemyMove = false
+        var enemySpeed = 20, enemyJumpSpeed = 10;
+        var enemyJump = false, enemyReachTop = false;
 
+        var numberOfEnemy = 2;
+        var enemiesList = [];
 
-        var numberOfEnemy=2
-        var enemiesList=[]
         for (let i = 0; i < numberOfEnemy; i++) {
             const newEnemy = new Enemy(i, 800 + i * 200, 700);
-
-            
-            setEnemy(i, newEnemy.x, newEnemy.y)
+            createEnemy(i, newEnemy.x, newEnemy.y);
             enemiesList.push(newEnemy);
         }
-        console.log(enemiesList.length)
+
         var urlImage = 'url("images/characters/edward/edwardelricBase.png")';
-    
+
         function setPlayer(x, y) {
             var div = document.getElementById("main_player");
-    
             div.style.marginLeft = x + "px";
             div.style.marginTop = y + "px";
             div.style.backgroundImage = urlImage;
         }
-    
+
         document.addEventListener('keydown', function (event) {
             if (event.key === 'ArrowUp' && !jump) {
                 jump = true;
                 jumpSpeed = 50;
-                console.log("Jump");
             }
             if (event.key === 'ArrowRight') {
-                console.log("Right");
                 move = true;
                 speed = 20;
             }
             if (event.key === 'ArrowLeft') {
-                console.log("Left");
                 move = true;
                 speed = -20;
             }
             if (event.key === "1" && !jump) {
-                console.log("WEAPON1");
                 weapon1 = true;
             }
-            console.log("SS")
-
         });
-    
+
         function handleMovement() {
             if (move) {
                 x += speed;
@@ -139,7 +122,7 @@ function setEnemy(id, x,y){
                 speed = 0;
             }
         }
-    
+
         function handleJump() {
             if (jump) {
                 y -= jumpSpeed;
@@ -158,7 +141,7 @@ function setEnemy(id, x,y){
                 }
             }
         }
-    
+
         function handleWeapon1() {
             if (weapon1) {
                 myCounter++;
@@ -174,39 +157,40 @@ function setEnemy(id, x,y){
             }
         }
 
+        function moveEnemies(id) {
+            enemiesList[id].x -= enemySpeed;
+            updateEnemyPosition(id, enemiesList[id].x, enemiesList[id].y);
+        }
 
-   
-    
-    function moveEnemies(id) {
-        var enemy1 = document.getElementById("enemy-"+id);
+        function jumpEnemies(id) {
+            enemiesList[id].y -= enemyJumpSpeed;
+            if (enemiesList[id].y < 500 && !enemyReachTop) {
+                enemyJumpSpeed *= -1;
+                enemyReachTop = true;
+            }
+            if (enemyReachTop && enemiesList[id].y>700) {
+                enemiesList[id].y = 700;
+                enemyJumpSpeed = 0;
+                enemyJump = false;
+                enemyReachTop = false;
+            }
+            updateEnemyPosition(id, enemiesList[id].x, enemiesList[id].y);
+        }
 
-        enemiesList[id-1].x -= enemySpeed;
-        enemy1.style.marginLeft = enemiesList[id-1].x + "px";
-    }
+        var repaint = setInterval(function () {
+            //moveEnemies(0); // Korigovan indeks za prvog neprijatelja
+            jumpEnemies(0)
+            
+            handleMovement();
+            handleJump();
+            handleWeapon1();
+            setPlayer(x, y);
 
+            for (let i = 0; i < numberOfEnemy; i++) {
+                updateEnemyPosition(i, enemiesList[i].x, enemiesList[i].y);
+            }
+        }, 100);
 
-    function enemyJump(id){
-        var enemy1=document.getElementById("enemy-"+id)
-        enemiesList[id-1].y-=enemySpeed
-        if(enemiesList[id-1].y<500 && !enemyReachTop)
-    }
-
-
-    var repaint = setInterval(function () {
-        moveEnemies(1);
-
-        handleMovement();
-        handleJump();
-        handleWeapon1();
         setPlayer(x, y);
-    }, 100);
-    setPlayer(x, y);
-</script>
-    
-
-
-
-<script>
-    
-</script>
+    </script>
 </html>

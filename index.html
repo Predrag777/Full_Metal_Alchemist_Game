@@ -55,6 +55,25 @@
         console.log('Enemy stopped attacking');
     }
 }
+
+function setEnemy(id, x,y){
+    const enemy = document.createElement("div");
+
+
+            enemy.id = `enemy-${id}`;
+            enemy.style.backgroundColor = "green";
+            enemy.style.width = "100px"; 
+            enemy.style.height = "200px"; 
+            enemy.style.position = "absolute"; 
+            enemy.style.left = x + "px"; 
+            enemy.style.top = y + "px"; 
+            enemy.classList.add("enemy");
+
+
+            
+
+            document.getElementById("body").appendChild(enemy);
+}
     </script>
     <script>
         var x = 200;
@@ -69,20 +88,10 @@
         var numberOfEnemy=2
         var enemiesList=[]
         for (let i = 0; i < numberOfEnemy; i++) {
-            const newEnemy = new Enemy(i, 400 + i * 100, 700);
+            const newEnemy = new Enemy(i, 800 + i * 200, 700);
 
-            const enemy = document.createElement("div");
-            enemy.classList.add("enemy");
-            enemy.id = `enemy-${i}`;
-            enemy.style.backgroundColor = "green";
-            enemy.style.width = "50px"; 
-            enemy.style.height = "50px"; 
-            enemy.style.position = "absolute"; 
-            enemy.style.left = newEnemy.x + "px"; 
-            enemy.style.top = newEnemy.y + "px"; 
-
-            document.getElementById("body").appendChild(enemy);
-
+            
+            setEnemy(i, newEnemy.x, newEnemy.y)
             enemiesList.push(newEnemy);
         }
         console.log(enemiesList.length)
@@ -165,6 +174,10 @@
         }
     
         var repaint = setInterval(function () {
+            var ss=document.getElementById("enemy-1")
+            enemiesList[0].x-=20
+            ss.style.marginLeft=enemiesList[0].x+"px"
+            
             handleMovement();
             handleJump();
             handleWeapon1();

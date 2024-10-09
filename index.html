@@ -68,22 +68,22 @@
 
         var numberOfEnemy=2
         var enemiesList=[]
-        for(let i=0;i<numberOfEnemy;i++){
-            const newEnemy=new Enemy(i, 400+i*100, 700)
+        for (let i = 0; i < numberOfEnemy; i++) {
+            const newEnemy = new Enemy(i, 400 + i * 100, 700);
 
-            const enemy=document.createElement("div")
-            enemy.classList.add("enemy")
-            enemy.id=`${i}`
-            enemy.style.backgroundColor="green"
-            
-            enemy.style.marginLeft = newEnemy.x+"px"
-            enemy.style.marginTop = newEnemy.y+"px"
-
-            enemy.style.width="100px"
-            enemy.style.height="200px"
+            const enemy = document.createElement("div");
+            enemy.classList.add("enemy");
+            enemy.id = `enemy-${i}`;
+            enemy.style.backgroundColor = "green";
+            enemy.style.width = "50px"; 
+            enemy.style.height = "50px"; 
+            enemy.style.position = "absolute"; 
+            enemy.style.left = newEnemy.x + "px"; 
+            enemy.style.top = newEnemy.y + "px"; 
 
             document.getElementById("body").appendChild(enemy);
-            enemiesList.push(newEnemy)
+
+            enemiesList.push(newEnemy);
         }
         console.log(enemiesList.length)
         var urlImage = 'url("images/characters/edward/edwardelricBase.png")';

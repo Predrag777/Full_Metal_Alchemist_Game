@@ -9,13 +9,74 @@
 
     </body>
     <script>
+        class Enemy {
+    constructor(x, y) {
+        // Definisanje pozicija x i y
+        this.x = x;
+        this.y = y;
+
+        // Boolean vrednosti za akcije
+        this.move = false;
+        this.jump = false;
+        this.attack = false;
+    }
+
+    // Metoda za pomeranje neprijatelja
+    startMove() {
+        this.move = true;
+        console.log('Enemy started moving');
+    }
+
+    stopMove() {
+        this.move = false;
+        console.log('Enemy stopped moving');
+    }
+
+    // Metoda za skok
+    startJump() {
+        this.jump = true;
+        console.log('Enemy jumped');
+    }
+
+    stopJump() {
+        this.jump = false;
+        console.log('Enemy landed');
+    }
+
+    // Metoda za napad
+    startAttack() {
+        this.attack = true;
+        console.log('Enemy started attacking');
+    }
+
+    stopAttack() {
+        this.attack = false;
+        console.log('Enemy stopped attacking');
+    }
+}
+    </script>
+    <script>
         var x = 200;
         var y = 700;
         var speed = 0, jumpSpeed = 0, myCounter = 0;
         var jump = false, reachedTop = false, weapon1 = false, move = false;
     
         var enemySpeed = 20;
-    
+        var enemyJump = false, enemyReachTop = false, enemyMove = false
+
+
+        var numberOfEnemy=2
+        
+        for(let i=0;i<numberOfEnemy;i++){
+            const enemy=document.createElement("div")
+            enemy.classList.add("enemy")
+            enemy.id=`${i}`
+            
+            
+            enemy.style.marginLeft = "500px"
+            enemy.style.marginTop = "700px"
+        }
+
         var urlImage = 'url("images/characters/edward/edwardelricBase.png")';
     
         function setPlayer(x, y) {
@@ -46,6 +107,7 @@
                 console.log("WEAPON1");
                 weapon1 = true;
             }
+
         });
     
         function handleMovement() {
@@ -81,9 +143,9 @@
         function handleWeapon1() {
             if (weapon1) {
                 myCounter++;
-                if (myCounter < 5) {
+                if (myCounter < 15) {
                     urlImage = 'url("images/characters/edward/edwardelricCallWeapon.png")';
-                } else if (myCounter < 10) {
+                } else if (myCounter < 20) {
                     urlImage = 'url("images/characters/edward/edwardelricWeapon1.png")';
                     weapon1 = false;
                 } else {

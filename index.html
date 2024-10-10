@@ -47,14 +47,14 @@
                 console.log('Enemy stopped attacking');
             }
         }
-
+        var enemyUrl='url("images/characters/mustang/roymustangBase.png")'
         function createEnemy(id, x, y) {
             const enemy = document.createElement("div");
             enemy.id = `enemy-${id}`;
             //enemy.style.backgroundColor = "green";
             enemy.style.backgroundRepeat="no-repeat"
             enemy.style.backgroundSize="cover"
-            enemy.style.backgroundImage='url("images/characters/mustang/roymustangBase.png")';
+            enemy.style.backgroundImage=enemyUrl;
             enemy.style.width = "100px"; 
             enemy.style.height = "200px"; 
             enemy.style.position = "absolute"; 
@@ -79,7 +79,7 @@
         var jump = false, reachedTop = false, weapon1 = false, move = false, kick=false, attack=false, punched=true;
         var alchemyAttack=false, power=false
         var alchemyX=0, alchemyY=700
-
+        
         var enemySpeed = 20, enemyJumpSpeed = 40;
         var enemyJump = false, enemyReachTop = false;
         
@@ -252,9 +252,15 @@
         }
 
         function moveEnemies(id, direction) {
+
             enemySpeed*=direction
-            if(enemiesList[id].x-enemySpeed>50)
+            if(enemiesList[id].x-enemySpeed>50){
+                enemyUrl=(enemyUrl.includes('roymustangBase.png')) 
+                    ? 'url("images/characters/mustang/roymustangBase2.png")' 
+                    : 'url("images/characters/mustang/roymustangBase.png")';
                 enemiesList[id].x -= enemySpeed;
+            }
+            
             updateEnemyPosition(id, enemiesList[id].x, enemiesList[id].y);
         }
 
@@ -301,7 +307,7 @@
         var repaint = setInterval(function () {
             //moveEnemies(0); 
             //jumpEnemies(0)
-            /*var pullMove=enemyNextMove(x,y,enemiesList[0].x,enemiesList[0].y,jump, enemyJump)
+            var pullMove=enemyNextMove(x,y,enemiesList[0].x,enemiesList[0].y,jump, enemyJump)
             console.log(pullMove)
             switch(pullMove){
                 case 1:
@@ -310,8 +316,9 @@
                 case 2:
                     moveEnemies(0,-1)
                     break
-            }*/
-
+            }
+            document.getElementById("enemy-0").style.backgroundImage=enemyUrl
+            console.log(enemyUrl)
             if(alchemyAttack)
                 handleAlchemyAttack()
             handleAttack()

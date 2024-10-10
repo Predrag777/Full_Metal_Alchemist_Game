@@ -163,13 +163,15 @@
             }
         }
 
-        function moveEnemies(id) {
+        function moveEnemies(id, direction) {
+            enemySpeed*=direction
             if(enemiesList[id].x-enemySpeed>50)
                 enemiesList[id].x -= enemySpeed;
             updateEnemyPosition(id, enemiesList[id].x, enemiesList[id].y);
         }
 
         function enemyNextMove(myX, myY, x, y, jump, enemyJump){
+            console.log((myX+150)+"     "+x)
             if(x<myX+150){
                 return 2//right
             }
@@ -207,8 +209,15 @@
             //moveEnemies(0); 
             //jumpEnemies(0)
             var pullMove=enemyNextMove(x,y,enemiesList[0].x,enemiesList[0].y,jump, enemyJump)
-            
-            console.log(x+"     "+enemiesList[0].x)
+            console.log(pullMove)
+            switch(pullMove){
+                case 1:
+                    moveEnemies(0,1)
+                    break
+                case 2:
+                    moveEnemies(0,-1)
+                    break
+            }
 
 
 

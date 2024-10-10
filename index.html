@@ -72,7 +72,7 @@
         var x = 200;
         var y = 700;
         var speed = 0, jumpSpeed = 0, myCounter = 0;
-        var jump = false, reachedTop = false, weapon1 = false, move = false;
+        var jump = false, reachedTop = false, weapon1 = false, move = false, kick=false, attack=false, punched=true;
         var alchemyAttack=false, power=false
         var alchemyX=0, alchemyY=700
 
@@ -116,6 +116,9 @@
             }
             if(event.key ==="a"){
                 attack=true
+            }
+            if(event.key==="d"){
+                kick=true
             }
             if(event.key === "s" && !jump){
                 alchemyAttack=true
@@ -202,6 +205,48 @@
             }
         }
 
+        function handleAttack(){
+            if(attack){
+                if(myCounter<5){
+                    urlImage = 'url("images/characters/edward/edwardelricPunch2.png")';
+                }else if(myCounter<10){
+                    urlImage = 'url("images/characters/edward/edwardelricPunch.png")';
+                }else{
+                    myCounter=-1
+                    attack=false
+                    urlImage = 'url("images/characters/edward/edwardelricBase.png")';
+                }
+                myCounter++
+            }
+            if(kick){
+                if(myCounter<10){
+                    urlImage = 'url("images/characters/edward/edwardelricKick1.png")';
+                }else if(myCounter<15){
+                    urlImage = 'url("images/characters/edward/edwardelricMidKick.png")';
+                }else{
+                    myCounter=-1
+                    kick=false
+                    urlImage = 'url("images/characters/edward/edwardelricBase.png")';
+                }
+                myCounter++
+            }
+            
+        }
+
+        function handlePunched(){
+            if(punched){
+                if(myCounter<5){
+                    urlImage = 'url("images/characters/edward/edwardelricPunched.png")';
+                    x-=5
+                }else{
+                    urlImage = 'url("images/characters/edward/edwardelricBase.png")';
+                    myCounter=-1
+                    punched=false
+                }
+                myCounter++
+            }
+        }
+
         function moveEnemies(id, direction) {
             enemySpeed*=direction
             if(enemiesList[id].x-enemySpeed>50)
@@ -265,6 +310,8 @@
 
             if(alchemyAttack)
                 handleAlchemyAttack()
+            handleAttack()
+            handlePunched()
             handleMovement();
             handleJump();
             handleWeapon1();

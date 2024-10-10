@@ -164,25 +164,29 @@
         }
 
         function moveEnemies(id) {
-            enemiesList[id].x -= enemySpeed;
+            if(enemiesList[id].x-enemySpeed>50)
+                enemiesList[id].x -= enemySpeed;
             updateEnemyPosition(id, enemiesList[id].x, enemiesList[id].y);
         }
 
-        function nextMove(myX, myY, x, y, jump, enemyJump){
+        function enemyNextMove(myX, myY, x, y, jump, enemyJump){
             if(x<myX+150){
-                return 2
+                return 2//right
             }
 
             if(x>myX+150){
-                return 1
+                return 1//left
             }
 
             if(alchemyAttack)
-                return 3
+                return 3//jump
 
             if(attack && x<myX+200)
-                return 2
+                return 2//right
         }
+
+
+        
 
         function jumpEnemies(id) {
             enemiesList[id].y -= enemyJumpSpeed;
@@ -200,9 +204,14 @@
         }
 
         var repaint = setInterval(function () {
-            moveEnemies(0); 
+            //moveEnemies(0); 
             //jumpEnemies(0)
+            var pullMove=enemyNextMove(x,y,enemiesList[0].x,enemiesList[0].y,jump, enemyJump)
+            
             console.log(x+"     "+enemiesList[0].x)
+
+
+
             handleMovement();
             handleJump();
             handleWeapon1();

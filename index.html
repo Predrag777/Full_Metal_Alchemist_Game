@@ -51,12 +51,16 @@
         function createEnemy(id, x, y) {
             const enemy = document.createElement("div");
             enemy.id = `enemy-${id}`;
-            enemy.style.backgroundColor = "green";
+            //enemy.style.backgroundColor = "green";
+            enemy.style.backgroundRepeat="no-repeat"
+            enemy.style.backgroundSize="cover"
+            enemy.style.backgroundImage='url("images/characters/mustang/roymustangBase.png")';
             enemy.style.width = "100px"; 
             enemy.style.height = "200px"; 
             enemy.style.position = "absolute"; 
             enemy.style.left = x + "px"; 
             enemy.style.top = y + "px"; 
+            enemy.style.transform = "scaleX(-1)";
             enemy.classList.add("enemy");
             document.getElementById("body").appendChild(enemy);
         }

@@ -18,9 +18,10 @@ body{
 }
 
 .enemy{
-    height:200px;
-    width: 100px;
     position: absolute;
+    background-repeat: no-repeat;
+    background-size: 150px 200px; 
+    background-position: center;
     
 }
 

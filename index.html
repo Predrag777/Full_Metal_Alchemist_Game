@@ -7,6 +7,37 @@
         <div id="main_player"></div>
     </body>
     <script>
+        let csvContent = "data:text/csv;charset=utf-8,"; 
+
+csvContent += "Step,X,Y,Action\n";
+
+function addMovementToCSV(step, x, y, action) {
+    csvContent += `${step},${x},${y},${action}\n`;
+}
+
+function downloadCSV(filename) {
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+
+    link.click();
+    document.body.removeChild(link); 
+}
+
+let stepCounter = 1;
+function logEnemyMove(x, y, action) {
+    addMovementToCSV(stepCounter, x, y, action);
+    stepCounter++;
+}
+
+function saveEnemyMovements() {
+    downloadCSV("enemy_movements.csv");
+}
+
+    </script>
+    <script>
         class Enemy {
             constructor(id, x, y) {
                 this.x = x;
@@ -51,12 +82,10 @@
         function createEnemy(id, x, y) {
             const enemy = document.createElement("div");
             enemy.id = `enemy-${id}`;
-            //enemy.style.backgroundColor = "green";
             enemy.style.backgroundRepeat="no-repeat"
-            enemy.style.backgroundSize="cover"
             enemy.style.backgroundImage=enemyUrl;
-            enemy.style.width = "100px"; 
-            enemy.style.height = "200px"; 
+            enemy.style.width = "200px"; 
+            enemy.style.height = "250px"; 
             enemy.style.position = "absolute"; 
             enemy.style.left = x + "px"; 
             enemy.style.top = y + "px"; 
@@ -80,9 +109,9 @@
         var alchemyAttack=false, power=false
         var alchemyX=0, alchemyY=700
         
-        var enemySpeed = 20, enemyJumpSpeed = 40;
+        var enemySpeed = 20, enemyJumpSpeed = 40, enemyCounter=0;
         var enemyJump = false, enemyReachTop = false;
-        
+        var enemyAttack=false, enemyKick=false 
 
         var numberOfEnemy = 2;
         var enemiesList = [];
@@ -126,6 +155,9 @@
             }
             if(event.key === "s" && !jump){
                 alchemyAttack=true
+            }
+            if (event.key === 'Enter') {
+                saveEnemyMovements(); // Ručno sačuvaj CSV pritiskom na Enter za testiranje
             }
         });
 
@@ -254,7 +286,7 @@
         function moveEnemies(id, direction) {
 
             enemySpeed*=direction
-            if(enemiesList[id].x-enemySpeed>50){
+            if(enemiesList[id].x-enemySpeed>50 ){
                 enemyUrl=(enemyUrl.includes('roymustangBase.png')) 
                     ? 'url("images/characters/mustang/roymustangBase2.png")' 
                     : 'url("images/characters/mustang/roymustangBase.png")';
@@ -264,31 +296,84 @@
             updateEnemyPosition(id, enemiesList[id].x, enemiesList[id].y);
         }
 
-        function enemyNextMove(myX, myY, x, y, jump, enemyJump){
-            console.log((myX+150)+"     "+x)
-            if(x<myX+150){
-                return 2//right
+        function attackEnemy(id){
+            if(enemyAttack){
+                if(enemyCounter<2){
+                    enemyUrl='url("images/characters/mustang/roymustangPunch1.png")' 
+                }else if(enemyCounter<4){
+                    enemyUrl='url("images/characters/mustang/roymustangPunch2.png")' 
+                }else if(enemyCounter<6){
+                    enemyUrl='url("images/characters/mustang/roymustangPunch3.png")' 
+                }else if(enemyCounter<8){
+                    enemyUrl='url("images/characters/mustang/roymustangPunch4.png")' 
+                }else if(enemyCounter<10){
+                    enemyUrl='url("images/characters/mustang/roymustangPunch5.png")' 
+                }else if(enemyCounter<12){
+                    enemyUrl='url("images/characters/mustang/roymustangPunch6.png")' 
+                }else{
+                    enemyCounter=-1
+                    enemyCounter=false
+                    enemyUrl='url("images/characters/mustang/roymustangBase.png")'
+                }
+                enemyCounter++
             }
-
-            if(x>myX+150){
-                return 1//left
-            }
-
-            if(alchemyAttack)
-                return 3//jump
-
-            if(attack && x<myX+200)
-                return 2//right
         }
 
-        function enemyAI(myX, myY, x, y, jump, enemyJump){
-            
+        function enemyNextMoveMonteCarlo(myX, myY, x, y, jump, enemyJump) {
+            const possibleMoves = [1, 2, 3, 4]; // 1: left, 2: right, 3: jump, 4: attack
+            const simulations = 100; // Koliko poteza ćemo simulirati
+            const maxSteps = 10; // Koliko koraka unapred simuliramo
+            const moveScores = {1: 0, 2: 0, 3: 0, 4: 0}; // Skladištenje rezultata za svaki potez
 
-        }
+            for (let i = 0; i < simulations; i++) {
+                const move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+                let simulatedX = x;
+                let simulatedY = y;
+                let score = 0;
+
+                for (let step = 0; step < maxSteps; step++) {
+                    switch (move) {
+                        case 1: 
+                            simulatedX -= 20;
+                            break;
+                        case 2: 
+                            simulatedX += 20;
+                            break;
+                        case 3: 
+                            simulatedY -= 50; 
+                            break;
+                        case 4: 
+                            if (simulatedX < myX + 200) {
+                                score += 50; 
+                            }
+                            break;
+                    }
+
+                    const distanceToPlayer = Math.abs(simulatedX - myX);
+                    score -= distanceToPlayer;
+
+                    if (simulatedX < myX + 150) {
+                        score += 20; 
+                    }
+                }
+
+                moveScores[move] += score;
+            }
+            let bestMove = 1;
+            let bestScore = moveScores[1];
+
+            for (let move of possibleMoves) {
+                if (moveScores[move] > bestScore) {
+                    bestScore = moveScores[move];
+                    bestMove = move;
+                }
+            }
+
+            return bestMove;
+    }
 
 
-        
-
+    
         function jumpEnemies(id) {
             enemiesList[id].y -= enemyJumpSpeed;
             if (enemiesList[id].y < 500 && !enemyReachTop) {
@@ -304,17 +389,25 @@
             updateEnemyPosition(id, enemiesList[id].x, enemiesList[id].y);
         }
 
+        window.addEventListener('beforeunload', function (e) {
+    saveEnemyMovements();
+});
+
         var repaint = setInterval(function () {
             //moveEnemies(0); 
             //jumpEnemies(0)
-            var pullMove=enemyNextMove(x,y,enemiesList[0].x,enemiesList[0].y,jump, enemyJump)
+            var pullMove=enemyNextMoveMonteCarlo(x,y,enemiesList[0].x,enemiesList[0].y,jump, enemyJump)
             console.log(pullMove)
             switch(pullMove){
-                case 1:
+                case 1 && !enemyAttack:
                     moveEnemies(0,1)
                     break
-                case 2:
+                case 2 && !enemyAttack:
                     moveEnemies(0,-1)
+                    break
+                case 4:
+                    enemyAttack=true
+                    attackEnemy()
                     break
             }
             document.getElementById("enemy-0").style.backgroundImage=enemyUrl
@@ -326,6 +419,7 @@
             handleMovement();
             handleJump();
             handleWeapon1();
+            logEnemyMove(x,y,attack)
             setPlayer(x, y);
 
             for (let i = 0; i < numberOfEnemy; i++) {
@@ -334,5 +428,7 @@
         }, 100);
 
         setPlayer(x, y);
+
+        
     </script>
 </html>

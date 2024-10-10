@@ -10,10 +10,10 @@ body{
 }
 
 #main_player{
-    height: 200px;
-    width: 100px;
+    height: 250px;
+    width: 250px;
     background-repeat: no-repeat;
-    background-size: cover; 
+    background-size: 150px 200px; 
     background-position: center;
 }
 
@@ -22,4 +22,11 @@ body{
     width: 100px;
     position: absolute;
     
+}
+
+#alchemy{
+    position: absolute;
+    background-repeat: no-repeat;
+    background-size: 500px 250px; 
+    background-position: center;
 }

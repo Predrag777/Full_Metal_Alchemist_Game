@@ -73,7 +73,8 @@
         var y = 700;
         var speed = 0, jumpSpeed = 0, myCounter = 0;
         var jump = false, reachedTop = false, weapon1 = false, move = false;
-        var alchemyAttack=false
+        var alchemyAttack=false, power=false
+        var alchemyX=0, alchemyY=700
 
         var enemySpeed = 20, enemyJumpSpeed = 40;
         var enemyJump = false, enemyReachTop = false;
@@ -116,6 +117,9 @@
             if(event.key ==="a"){
                 attack=true
             }
+            if(event.key === "s" && !jump){
+                alchemyAttack=true
+            }
         });
 
         function handleMovement() {
@@ -127,6 +131,41 @@
                 move = false;
                 speed = 0;
             }
+        }
+
+        function handleAlchemyAttack(){
+            
+            if(myCounter<10){
+                urlImage = 'url("images/characters/edward/edwardelricSpecAttack.png")';
+            }else if(myCounter<20){
+                alchemyX=enemiesList[0].x
+                urlImage = 'url("images/characters/edward/edwardelricSpecAttack1.png")';
+            }else if(myCounter<40){
+                var alchemyDiv=document.createElement("div")
+                alchemyDiv.id="alchemy"
+                alchemyDiv.style.width="400px"
+                alchemyDiv.style.height="100px"
+                alchemyDiv.style.top="800px"
+                alchemyDiv.style.left=alchemyX+"px"
+                alchemyDiv.style.backgroundImage="url('images/characters/edward/edwardelricPower.png')"
+                //alchemyDiv.style.backgroundColor="black"
+                if(myCounter==21)
+                    document.getElementById("body").appendChild(alchemyDiv);
+                if(myCounter==38){
+                    console.log("WAFFEN")
+                    document.getElementById("alchemy").remove()
+                }
+                power=true
+                urlImage = 'url("images/characters/edward/edwardelricSpecAttack2.png")';
+            }else{
+                
+                power=false
+                alchemyAttack=false
+                myCounter=-1
+                urlImage='url("images/characters/edward/edwardelricBase2.png")' 
+            }
+
+            myCounter++
         }
 
         function handleJump() {
@@ -187,6 +226,11 @@
                 return 2//right
         }
 
+        function enemyAI(myX, myY, x, y, jump, enemyJump){
+            
+
+        }
+
 
         
 
@@ -208,7 +252,7 @@
         var repaint = setInterval(function () {
             //moveEnemies(0); 
             //jumpEnemies(0)
-            var pullMove=enemyNextMove(x,y,enemiesList[0].x,enemiesList[0].y,jump, enemyJump)
+            /*var pullMove=enemyNextMove(x,y,enemiesList[0].x,enemiesList[0].y,jump, enemyJump)
             console.log(pullMove)
             switch(pullMove){
                 case 1:
@@ -217,10 +261,10 @@
                 case 2:
                     moveEnemies(0,-1)
                     break
-            }
+            }*/
 
-
-
+            if(alchemyAttack)
+                handleAlchemyAttack()
             handleMovement();
             handleJump();
             handleWeapon1();

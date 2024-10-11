@@ -39,30 +39,31 @@ function downloadCSV(filename) {
     </script>
 
     <script>
-        async function getAIAnswer(arg1, arg2, arg3, arg4) {
-        try {
-            const url = `http://localhost:5000/api/receive?arg1=${arg1}&arg2=${arg2}&arg3=${arg3}&arg4=${arg4}`;
+   async function getAIAnswer(arg1, arg2, arg3, arg4) {
+    try {
+        const url = `http://localhost:5000/api/receive?arg1=${arg1}&arg2=${arg2}&arg3=${arg3}&arg4=${arg4}`;
 
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
         });
 
+        
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
         const data = await response.json();
 
-        console.log('Predicted class:', data.message);
-        return data.message;
-
+        console.log('Predicted class:', data.message); 
+        return data.message;  
     } catch (error) {
         console.error('Error:', error);
     }
 }
+
 
     </script>
 
@@ -186,7 +187,7 @@ function downloadCSV(filename) {
                 alchemyAttack=true
             }
             if (event.key === 'Enter') {
-                saveEnemyMovements(); // Ručno sačuvaj CSV pritiskom na Enter za testiranje
+                saveEnemyMovements(); 
             }
         });
 
@@ -349,10 +350,10 @@ function downloadCSV(filename) {
         }
 
         function enemyNextMoveMonteCarlo(myX, myY, x, y, jump, enemyJump) {
-            const possibleMoves = [1, 2, 3, 4]; // 1: left, 2: right, 3: jump, 4: attack
-            const simulations = 100; // Koliko poteza ćemo simulirati
-            const maxSteps = 10; // Koliko koraka unapred simuliramo
-            const moveScores = {1: 0, 2: 0, 3: 0, 4: 0}; // Skladištenje rezultata za svaki potez
+            const possibleMoves = [1, 2, 3, 4]; 
+            const simulations = 100; 
+            const maxSteps = 10; 
+            const moveScores = {1: 0, 2: 0, 3: 0, 4: 0}; 
 
             for (let i = 0; i < simulations; i++) {
                 const move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
@@ -422,46 +423,52 @@ function downloadCSV(filename) {
             saveEnemyMovements();
         });
 
-        var repaint = setInterval(function () {
-            //moveEnemies(0); 
-            //jumpEnemies(0)
-            var pullMove=enemyNextMoveMonteCarlo(x,y,enemiesList[0].x,enemiesList[0].y,jump, enemyJump)
-            console.log(pullMove)
-            switch(pullMove){
-                case 1 && !enemyAttack:
-                    moveEnemies(0,1)
-                    break
-                case 2 && !enemyAttack:
-                    moveEnemies(0,-1)
-                    break
-                case 4:
-                    enemyAttack=true
-                    attackEnemy()
-                    break
-            }
-            document.getElementById("enemy-0").style.backgroundImage=enemyUrl
-            console.log(enemyUrl)
-            if(alchemyAttack)
-                handleAlchemyAttack()
-            handleAttack()
-            handlePunched()
-            handleMovement();
-            handleJump();
-            handleWeapon1();
-            let option=1
-            if(attack)
-                option=2
-            else if(jump)
-                option=3
-            a=getAIAnswer(x, y, enemiesList[0].x,enemiesList[0].y,option)
-            console.log(`SSSSSSS   ${a}`)
-            //logEnemyMove(enemiesList[0].x, enemiesList[0].y, x, y, option)
-            setPlayer(x, y);
+        
+        let enemyMovePending = false; 
 
-            for (let i = 0; i < numberOfEnemy; i++) {
-                updateEnemyPosition(i, enemiesList[i].x, enemiesList[i].y);
+var repaint = setInterval(function () {
+    if (!enemyMovePending && !enemyAttack && !enemyJump) {
+        enemyMovePending = true; 
+        
+        getAIAnswer(x, y, enemiesList[0].x, enemiesList[0].y).then(a => {
+            console.log("API odgovor: " + a);
+
+            switch (a) {
+                case 1:
+                    moveEnemies(0, 1); 
+                    break;
+                case 2:
+                    enemyAttack = true;
+                    attackEnemy(0); 
+                    break;
+                case 3:
+                    enemyJump = true;
+                    jumpEnemies(0); 
+                    break;
             }
-        }, 100);
+        }).catch(error => {
+            console.error('Greška tokom API poziva:', error);
+        }).finally(() => {
+            enemyMovePending = false; 
+        });
+    }
+
+    document.getElementById("enemy-0").style.backgroundImage = enemyUrl;
+
+    if (alchemyAttack)
+        handleAlchemyAttack(); 
+    handleAttack();  
+    handlePunched(); 
+    handleMovement(); 
+    handleJump(); 
+    handleWeapon1(); 
+
+    setPlayer(x, y); 
+
+    for (let i = 0; i < numberOfEnemy; i++) {
+        updateEnemyPosition(i, enemiesList[i].x, enemiesList[i].y); 
+    }
+}, 100);
 
         setPlayer(x, y);
 

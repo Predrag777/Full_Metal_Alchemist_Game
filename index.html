@@ -67,7 +67,6 @@ function downloadCSV(filename) {
 
         const data = await response.json();
 
-        console.log('Predicted class:', data.message); 
         return data.message;  
     } catch (error) {
         console.error('Error:', error);
@@ -90,32 +89,26 @@ function downloadCSV(filename) {
 
             startMove() {
                 this.move = true;
-                console.log('Enemy started moving');
             }
 
             stopMove() {
                 this.move = false;
-                console.log('Enemy stopped moving');
             }
 
             startJump() {
                 this.jump = true;
-                console.log('Enemy jumped');
             }
 
             stopJump() {
                 this.jump = false;
-                console.log('Enemy landed');
             }
 
             startAttack() {
                 this.attack = true;
-                console.log('Enemy started attacking');
             }
 
             stopAttack() {
                 this.attack = false;
-                console.log('Enemy stopped attacking');
             }
         }
         var enemyUrl='url("images/characters/mustang/roymustangBase.png")'
@@ -151,7 +144,7 @@ function downloadCSV(filename) {
 
         var enemySpeed = 20, enemyJumpSpeed = 40, enemyCounter=0;
         var enemyJump = false, enemyReachTop = false;
-        var enemyAttack=false, enemyKick=false 
+        var enemyAttack=false, enemyKick=false , enemyPunched=false
 
         //Setup helth
         var myHelth=100, myKi=100
@@ -235,7 +228,6 @@ function downloadCSV(filename) {
                 if(myCounter==21)
                     document.getElementById("body").appendChild(alchemyDiv);
                 if(myCounter==38){
-                    console.log("WAFFEN")
                     document.getElementById("alchemy").remove()
                 }
                 power=true
@@ -288,6 +280,10 @@ function downloadCSV(filename) {
                 if(myCounter<5){
                     urlImage = 'url("images/characters/edward/edwardelricPunch2.png")';
                 }else if(myCounter<10){
+                    if(enemiesList[0].x-x<200){
+                        enemyPunched=true
+                        enemyHelth-=10
+                    }
                     urlImage = 'url("images/characters/edward/edwardelricPunch.png")';
                 }else{
                     myCounter=-1
@@ -300,6 +296,11 @@ function downloadCSV(filename) {
                 if(myCounter<10){
                     urlImage = 'url("images/characters/edward/edwardelricKick1.png")';
                 }else if(myCounter<15){
+                    if(enemiesList[0].x-x<200 && myCounter==13){
+                        enemyPunched=true
+                        
+                        enemyHelth-=15
+                    }
                     urlImage = 'url("images/characters/edward/edwardelricMidKick.png")';
                 }else{
                     myCounter=-1
@@ -326,8 +327,20 @@ function downloadCSV(filename) {
                 myCounter++
             }
         }
-        function enemyPunched(){
-            
+        function enemiesPunched(id){
+            if(enemyPunched){
+                if(enemyCounter<5){
+                    enemyUrl='url("images/characters/mustang/royPunched.png")' 
+                    enemiesList[id].x+=10
+                }else{
+                    console.log("WAFFEN")
+                    enemyCounter=-1
+                    enemyPunched=false
+                    enemyUrl='url("images/characters/mustang/roymustangBase.png")' 
+                }
+                updateEnemyPosition(id, enemiesList[id].x, enemiesList[id].y);
+                enemyCounter++
+            }
         }
 
         function moveEnemies(id, direction) {
@@ -344,7 +357,12 @@ function downloadCSV(filename) {
         }
 
         function attackEnemy(id){
+            if(enemyPunched){
+                    enemyAttack=false
+                    myCounter=0
+                }
             if(enemyAttack){
+                
                 if(enemyCounter<2){
                     enemyUrl='url("images/characters/mustang/roymustangPunch1.png")' 
                 }else if(enemyCounter<4){
@@ -353,7 +371,6 @@ function downloadCSV(filename) {
                     enemyUrl='url("images/characters/mustang/roymustangPunch3.png")' 
                 }else if(enemyCounter<8){
                     if(enemyCounter==7 && enemiesList[id].x-x<200){
-                        console.log("UDAREN SAM")
                         punched=true
                         handlePunched()
                     }
@@ -449,12 +466,10 @@ function downloadCSV(filename) {
         let enemyMovePending = false; 
 
 var repaint = setInterval(function () {
-    if (!enemyMovePending && !enemyAttack) {
-        console.log("SSSSSSSSS")
+    if (!enemyMovePending && !enemyAttack && !enemyPunched) {
         enemyMovePending = true; 
         
         getAIAnswer(x, y, enemiesList[0].x, enemiesList[0].y).then(a => {
-            console.log("API odgovor: " + a);
 
             switch (a) {
                 case 0:
@@ -475,7 +490,8 @@ var repaint = setInterval(function () {
         });
     }
     attackEnemy(0)
-    //console.log(x+"   "+enemiesList[0].x)
+    enemiesPunched(0)
+    
     document.getElementById("enemy-0").style.backgroundImage = enemyUrl;
 
     if (alchemyAttack)
@@ -496,8 +512,6 @@ var repaint = setInterval(function () {
     document.getElementById("enemyHelth").innerHTML = enemyHelth;
     document.getElementById("myHelth").innerHTML = myHelth;
     document.getElementById("myKi").innerHTML = myKi;
-
-    
 
     if(enemyKi<100)
         enemyKi+=0.01

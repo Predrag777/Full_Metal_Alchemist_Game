@@ -32,3 +32,11 @@ body{
     background-size: 500px 250px; 
     background-position: center;
 }
+
+#wall{
+    margin-top: 700px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    position:absolute;
+}

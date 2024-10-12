@@ -141,10 +141,13 @@ function downloadCSV(filename) {
         var jump = false, reachedTop = false, weapon1 = false, move = false, kick=false, attack=false, punched=true, wallAlchemy=false;
         var alchemyAttack=false, power=false
         var alchemyX=0, alchemyY=700
+        var wallUp=false
 
         var enemySpeed = 20, enemyJumpSpeed = 40, enemyCounter=0;
         var enemyJump = false, enemyReachTop = false;
-        var enemyAttack=false, enemyKick=false , enemyPunched=false, enemyAlchemy=false,enemyAlchemy2=false
+        var enemyAttack=false, enemyKick=false , enemyPunched=false, enemyAlchemy=false,enemyAlchemy2=true
+        var enemyExplosion=false
+
 
         //Setup helth
         var myHelth=100, myKi=100
@@ -193,6 +196,9 @@ function downloadCSV(filename) {
             if(event.key === "s" && !jump){
                 alchemyAttack=true
             }
+            if(event.key === "q" && !jump){
+                wallAlchemy=true
+            }
             if (event.key === 'Enter') {
                 saveEnemyMovements(); 
             }
@@ -240,39 +246,71 @@ function downloadCSV(filename) {
             }
             myCounter++
         }
-        function handleWallAlchemy(){
-            if(wallAlchemy){
-                if(myCounter<10){
-                    urlImage = 'url("images/characters/edward/edwardelricSpecAttack.png")';
-                }else if(myCounter<20){
-                    alchemyX=enemiesList[0].x
-                    urlImage = 'url("images/characters/edward/edwardelricSpecAttack1.png")';
-                }else if(myCounter<40){
-                    var alchemyDiv=document.createElement("div")
-                    alchemyDiv.id="wall"
-                    alchemyDiv.style.width="400px"
-                    alchemyDiv.style.height="100px"
-                    alchemyDiv.style.top="800px"
-                    alchemyDiv.style.left=alchemyX+"px"
-                    var wallUrl=
-                    alchemyDiv.style.backgroundImage="url('images/characters/edward/edwardelricPower.png')"
-                    
-                    if(myCounter==21)
-                        document.getElementById("body").appendChild(alchemyDiv);
-                    if(myCounter==38){
-                        document.getElementById("alchemy").remove()
-                    }
-                    power=true
-                    urlImage = 'url("images/characters/edward/edwardelricSpecAttack2.png")';
-                }else{
-                    power=false
-                    alchemyAttack=false
-                    myCounter=-1
-                    urlImage='url("images/characters/edward/edwardelricBase2.png")' 
-                }
-                myCounter++
+        function handleWallAlchemy() {
+    if (wallAlchemy) {
+        if (myCounter < 2) {
+            console.log("wall")
+            urlImage = 'url("images/characters/edward/edwardelricSpecAttack.png")';
+        } else if (myCounter < 5) {
+            urlImage = 'url("images/characters/edward/edwardelricSpecAttack1.png")';
+        } else if (myCounter < 31) {
+            var alchemyDiv = document.getElementById("wall");
+
+            // Kreiraj novi element samo ako ne postoji
+            if (!alchemyDiv) {
+                alchemyDiv = document.createElement("div");
+                alchemyDiv.id = "wall";
+                alchemyDiv.style.position = "absolute";  // Postavi pozicioniranje na absolutno
+                document.getElementById("body").appendChild(alchemyDiv);
             }
+
+            // Proveri da li je x definisan pre nego što ga koristiš
+            // Ako nije, postavi ga ili koristi drugu vrednost za pozicioniranje
+            var x = x || 0;  // Možeš ovde postaviti podrazumevanu vrednost
+            alchemyDiv.style.left = (x + 500) + "px";
+
+            var wallUrl = "url('images/characters/edward/edwardelricPower.png')";
+            if (myCounter < 6) {
+                alchemyDiv.style.width = "90px";
+                alchemyDiv.style.height = "30px";
+                alchemyDiv.style.top = "140px";
+                wallUrl = "url('images/characters/edward/stone1.png')";
+            } else if (myCounter < 10) {
+                console.log("Waffen");
+                alchemyDiv.style.width = "90px";
+                alchemyDiv.style.height = "140px";
+                alchemyDiv.style.top = "50px";
+                wallUp=true
+                wallUrl = "url('images/characters/edward/stone2.png')";
+            } else if(myCounter<30){
+                alchemyDiv.style.width = "90px";
+                alchemyDiv.style.height = "190px";
+                alchemyDiv.style.top = "10px";
+                wallUrl = "url('images/characters/edward/stoneDefend.png')";
+                wallUp=true
+            }
+
+            alchemyDiv.style.backgroundImage = wallUrl;
+
+            if (myCounter == 30) {
+                var wallElement = document.getElementById("wall");
+                if (wallElement) {
+                    console.log("DSD")
+                    wallUp=false
+                    wallElement.remove();  // Proveri postojanje pre brisanja
+                }
+            }
+
+            urlImage = 'url("images/characters/edward/edwardelricSpecAttack2.png")';
+        } else {
+            wallAlchemy = false;
+            myCounter = -1;
+            urlImage = 'url("images/characters/edward/edwardelricBase2.png")';
         }
+        myCounter++;
+    }
+}
+
         function handleJump() {
             if (jump) {
                 y -= jumpSpeed;
@@ -359,6 +397,24 @@ function downloadCSV(filename) {
                 myCounter++
             }
         }
+        function alchemy2PerformedOnMe(){
+            if(enemyExplosion){
+                if(myCounter<10){
+                    console.log("BOMBA!!!")
+                    if(!wallUp){
+                        urlImage='url("images/characters/mustang/royMustangPower.png")' 
+                        if(myCounter==2)
+                            enemyKi-=20
+                    }
+                }else{
+                    enemyExplosion=false
+                    myCounter=-1
+                    urlImage='url("images/characters/edward/edwardelricBase2.png")'  
+                } 
+                myCounter++
+            }
+        }
+        
         function enemiesPunched(id){
             if(enemyPunched){
                 if(enemyCounter<5){
@@ -509,19 +565,18 @@ function downloadCSV(filename) {
                 }else if(enemyCounter<6){
                     enemyUrl='url("images/characters/mustang/royMustangSpecAttack3.png")' 
                 }else if(enemyCounter<8){
-                    /*if(enemyCounter==7 && enemiesList[id].x-x<200){
-                        punched=true
-                        handlePunched()
-                    }*/
                     enemyUrl='url("images/characters/mustang/royMustangSpecAttack4.png")' 
                 }else if(enemyCounter<20){
                     enemyUrl='url("images/characters/mustang/royMustangSpecAttack5.png")' 
                 }else if(enemyCounter<22){
                     enemyUrl='url("images/characters/mustang/royMustangSpecAttack6.png")' 
-                    
+                    if(enemiesList[id].y==y){
+                        enemyExplosion=true
+                    }
                 }else{
                     enemyCounter=-1
                     enemyAttack=false
+                    enemyAlchemy2=false
                     enemyUrl='url("images/characters/mustang/roymustangBase.png")'
                 }
                 enemyCounter++
@@ -574,8 +629,8 @@ var repaint = setInterval(function () {
             enemyMovePending = false; 
         });
     }*/
-   enemyAlchemy2=true
-   enemyAlchemyAttack2(0)
+   
+    enemyAlchemyAttack2(0)
     attackEnemy(0)
     enemiesPunched(0)
     
@@ -588,7 +643,8 @@ var repaint = setInterval(function () {
     handleMovement(); 
     handleJump(); 
     handleWeapon1(); 
-
+    handleWallAlchemy()
+    alchemy2PerformedOnMe()
     setPlayer(x, y); 
 
     for (let i = 0; i < numberOfEnemy; i++) {
@@ -601,7 +657,7 @@ var repaint = setInterval(function () {
     document.getElementById("myKi").innerHTML = myKi;
 
     if(enemyKi<100)
-        enemyKi+=0.01
+        enemyKi+=0.1
 }, 100);
 
         setPlayer(x, y);

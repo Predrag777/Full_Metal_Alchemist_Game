@@ -256,17 +256,14 @@ function downloadCSV(filename) {
         } else if (myCounter < 31) {
             var alchemyDiv = document.getElementById("wall");
 
-            // Kreiraj novi element samo ako ne postoji
             if (!alchemyDiv) {
                 alchemyDiv = document.createElement("div");
                 alchemyDiv.id = "wall";
-                alchemyDiv.style.position = "absolute";  // Postavi pozicioniranje na absolutno
+                alchemyDiv.style.position = "absolute";  
                 document.getElementById("body").appendChild(alchemyDiv);
             }
 
-            // Proveri da li je x definisan pre nego što ga koristiš
-            // Ako nije, postavi ga ili koristi drugu vrednost za pozicioniranje
-            var x = x || 0;  // Možeš ovde postaviti podrazumevanu vrednost
+            var x = x || 0;  
             alchemyDiv.style.left = (x + 500) + "px";
 
             var wallUrl = "url('images/characters/edward/edwardelricPower.png')";
@@ -297,7 +294,7 @@ function downloadCSV(filename) {
                 if (wallElement) {
                     console.log("DSD")
                     wallUp=false
-                    wallElement.remove();  // Proveri postojanje pre brisanja
+                    wallElement.remove();  
                 }
             }
 

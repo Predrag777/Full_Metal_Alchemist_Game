@@ -147,7 +147,7 @@ function downloadCSV(filename) {
         var enemyJump = false, enemyReachTop = false;
         var enemyAttack=false, enemyKick=false , enemyPunched=false, enemyAlchemy=false,enemyAlchemy2=true
         var enemyExplosion=false
-
+        var myCounter2=0
 
         //Setup helth
         var myHelth=100, myKi=100
@@ -396,19 +396,19 @@ function downloadCSV(filename) {
         }
         function alchemy2PerformedOnMe(){
             if(enemyExplosion){
-                if(myCounter<10){
+                if(myCounter2<10){
                     console.log("BOMBA!!!")
                     if(!wallUp){
                         urlImage='url("images/characters/mustang/royMustangPower.png")' 
-                        if(myCounter==2)
+                        if(myCounter2==2)
                             enemyKi-=20
                     }
                 }else{
                     enemyExplosion=false
-                    myCounter=-1
+                    myCounter2=-1
                     urlImage='url("images/characters/edward/edwardelricBase2.png")'  
                 } 
-                myCounter++
+                myCounter2++
             }
         }
         

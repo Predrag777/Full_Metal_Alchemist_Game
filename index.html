@@ -158,7 +158,7 @@ function downloadCSV(filename) {
         var myCounter2=0, enemyPunchedCounter=0
 
         //Setup helth
-        var myHelth=10, myKi=100
+        var myHelth=100, myKi=100
         var enemyHelth=100, enemyKi=100
 
         var numberOfEnemy = 1;
@@ -294,6 +294,7 @@ function downloadCSV(filename) {
                 alchemyDiv.style.top = "10px";
                 if(enemyExplosion){
                     wallUrl='url("images/characters/mustang/royMustangPower.png")' 
+                    enemyExplosion=false
                 }else
                     wallUrl = "url('images/characters/edward/stoneDefend.png')";
                 wallUp=true
@@ -420,11 +421,11 @@ function downloadCSV(filename) {
         function alchemy2PerformedOnMe(){
             if(enemyExplosion){
                 if(myCounter2<10){
-                    console.log("BOMBA!!!")
+                    
                     if(!wallUp){
                         urlImage='url("images/characters/mustang/royMustangPower.png")' 
                         if(myCounter2==2)
-                            enemyKi-=20
+                            myHelth-=10
                     }
                 }else{
                     enemyExplosion=false
@@ -677,7 +678,7 @@ var repaint = setInterval(function () {
     
     enemiesPunched(0)
     enemyAlchemyAttack2(0)
-    if(enemyHelth<0){
+    if(enemyHelth<=0){
         enemyUrl=  'url("images/characters/mustang/dead.png")'      
     }
     

@@ -10,6 +10,7 @@ body{
 }
 
 #main_player{
+    position: absolute;
     height: 250px;
     width: 250px;
     background-repeat: no-repeat;

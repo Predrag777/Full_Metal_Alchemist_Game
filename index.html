@@ -4,6 +4,16 @@
         <link rel="stylesheet" href="style/main_style.css">
     </head>
     <body id="body">
+        <div id="myInfo" style="float: left; ">
+            <h1 id="myHelth">100</h2>
+            <h1 id="myKi">100</h2>
+        </div>
+        
+        <div id="enemyInfo" style="float:right; display: inline-block; color: red;">
+            <h1 id="enemyHelth">100</h2>
+            <h1 id="enemyKi">100</h2>
+        </div>
+        
         <div id="main_player"></div>
     </body>
     <script>
@@ -138,12 +148,16 @@ function downloadCSV(filename) {
         var jump = false, reachedTop = false, weapon1 = false, move = false, kick=false, attack=false, punched=true;
         var alchemyAttack=false, power=false
         var alchemyX=0, alchemyY=700
-        
+
         var enemySpeed = 20, enemyJumpSpeed = 40, enemyCounter=0;
         var enemyJump = false, enemyReachTop = false;
         var enemyAttack=false, enemyKick=false 
 
-        var numberOfEnemy = 2;
+        //Setup helth
+        var myHelth=100, myKi=100
+        var enemyHelth=100, enemyKi=100
+
+        var numberOfEnemy = 1;
         var enemiesList = [];
 
         for (let i = 0; i < numberOfEnemy; i++) {
@@ -217,7 +231,7 @@ function downloadCSV(filename) {
                 alchemyDiv.style.top="800px"
                 alchemyDiv.style.left=alchemyX+"px"
                 alchemyDiv.style.backgroundImage="url('images/characters/edward/edwardelricPower.png')"
-                //alchemyDiv.style.backgroundColor="black"
+                
                 if(myCounter==21)
                     document.getElementById("body").appendChild(alchemyDiv);
                 if(myCounter==38){
@@ -227,13 +241,11 @@ function downloadCSV(filename) {
                 power=true
                 urlImage = 'url("images/characters/edward/edwardelricSpecAttack2.png")';
             }else{
-                
                 power=false
                 alchemyAttack=false
                 myCounter=-1
                 urlImage='url("images/characters/edward/edwardelricBase2.png")' 
             }
-
             myCounter++
         }
 
@@ -302,6 +314,8 @@ function downloadCSV(filename) {
         function handlePunched(){
             if(punched){
                 if(myCounter<5){
+                    if(myCounter==1)
+                        myHelth-=10
                     urlImage = 'url("images/characters/edward/edwardelricPunched.png")';
                     x-=5
                 }else{
@@ -312,15 +326,18 @@ function downloadCSV(filename) {
                 myCounter++
             }
         }
+        function enemyPunched(){
+            
+        }
 
         function moveEnemies(id, direction) {
 
-            enemySpeed*=direction
-            if(enemiesList[id].x-enemySpeed>50 ){
+            speed=direction*enemySpeed
+            if(enemiesList[id].x-speed>50 ){
                 enemyUrl=(enemyUrl.includes('roymustangBase.png')) 
                     ? 'url("images/characters/mustang/roymustangBase2.png")' 
                     : 'url("images/characters/mustang/roymustangBase.png")';
-                enemiesList[id].x -= enemySpeed;
+                enemiesList[id].x -= speed;
             }
             
             updateEnemyPosition(id, enemiesList[id].x, enemiesList[id].y);
@@ -335,6 +352,11 @@ function downloadCSV(filename) {
                 }else if(enemyCounter<6){
                     enemyUrl='url("images/characters/mustang/roymustangPunch3.png")' 
                 }else if(enemyCounter<8){
+                    if(enemyCounter==7 && enemiesList[id].x-x<200){
+                        console.log("UDAREN SAM")
+                        punched=true
+                        handlePunched()
+                    }
                     enemyUrl='url("images/characters/mustang/roymustangPunch4.png")' 
                 }else if(enemyCounter<10){
                     enemyUrl='url("images/characters/mustang/roymustangPunch5.png")' 
@@ -342,7 +364,7 @@ function downloadCSV(filename) {
                     enemyUrl='url("images/characters/mustang/roymustangPunch6.png")' 
                 }else{
                     enemyCounter=-1
-                    enemyCounter=false
+                    enemyAttack=false
                     enemyUrl='url("images/characters/mustang/roymustangBase.png")'
                 }
                 enemyCounter++
@@ -427,24 +449,24 @@ function downloadCSV(filename) {
         let enemyMovePending = false; 
 
 var repaint = setInterval(function () {
-    if (!enemyMovePending && !enemyAttack && !enemyJump) {
+    if (!enemyMovePending && !enemyAttack) {
+        console.log("SSSSSSSSS")
         enemyMovePending = true; 
         
         getAIAnswer(x, y, enemiesList[0].x, enemiesList[0].y).then(a => {
             console.log("API odgovor: " + a);
 
             switch (a) {
-                case 1:
+                case 0:
                     moveEnemies(0, 1); 
                     break;
+                case 1:
+                     moveEnemies(0,-1)
+                    break;
                 case 2:
-                    enemyAttack = true;
-                    attackEnemy(0); 
-                    break;
-                case 3:
-                    enemyJump = true;
-                    jumpEnemies(0); 
-                    break;
+                    enemyAttack=true
+                    
+                
             }
         }).catch(error => {
             console.error('Greška tokom API poziva:', error);
@@ -452,7 +474,8 @@ var repaint = setInterval(function () {
             enemyMovePending = false; 
         });
     }
-
+    attackEnemy(0)
+    //console.log(x+"   "+enemiesList[0].x)
     document.getElementById("enemy-0").style.backgroundImage = enemyUrl;
 
     if (alchemyAttack)
@@ -467,7 +490,17 @@ var repaint = setInterval(function () {
 
     for (let i = 0; i < numberOfEnemy; i++) {
         updateEnemyPosition(i, enemiesList[i].x, enemiesList[i].y); 
-    }
+    }  
+
+    document.getElementById("enemyKi").innerHTML = enemyKi;
+    document.getElementById("enemyHelth").innerHTML = enemyHelth;
+    document.getElementById("myHelth").innerHTML = myHelth;
+    document.getElementById("myKi").innerHTML = myKi;
+
+    
+
+    if(enemyKi<100)
+        enemyKi+=0.01
 }, 100);
 
         setPlayer(x, y);

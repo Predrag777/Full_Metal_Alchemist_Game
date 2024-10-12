@@ -138,13 +138,13 @@ function downloadCSV(filename) {
         var x = 200;
         var y = 700;
         var speed = 0, jumpSpeed = 0, myCounter = 0;
-        var jump = false, reachedTop = false, weapon1 = false, move = false, kick=false, attack=false, punched=true;
+        var jump = false, reachedTop = false, weapon1 = false, move = false, kick=false, attack=false, punched=true, wallAlchemy=false;
         var alchemyAttack=false, power=false
         var alchemyX=0, alchemyY=700
 
         var enemySpeed = 20, enemyJumpSpeed = 40, enemyCounter=0;
         var enemyJump = false, enemyReachTop = false;
-        var enemyAttack=false, enemyKick=false , enemyPunched=false, enemyAlchemy=false
+        var enemyAttack=false, enemyKick=false , enemyPunched=false, enemyAlchemy=false,enemyAlchemy2=false
 
         //Setup helth
         var myHelth=100, myKi=100
@@ -240,7 +240,39 @@ function downloadCSV(filename) {
             }
             myCounter++
         }
-
+        function handleWallAlchemy(){
+            if(wallAlchemy){
+                if(myCounter<10){
+                    urlImage = 'url("images/characters/edward/edwardelricSpecAttack.png")';
+                }else if(myCounter<20){
+                    alchemyX=enemiesList[0].x
+                    urlImage = 'url("images/characters/edward/edwardelricSpecAttack1.png")';
+                }else if(myCounter<40){
+                    var alchemyDiv=document.createElement("div")
+                    alchemyDiv.id="wall"
+                    alchemyDiv.style.width="400px"
+                    alchemyDiv.style.height="100px"
+                    alchemyDiv.style.top="800px"
+                    alchemyDiv.style.left=alchemyX+"px"
+                    var wallUrl=
+                    alchemyDiv.style.backgroundImage="url('images/characters/edward/edwardelricPower.png')"
+                    
+                    if(myCounter==21)
+                        document.getElementById("body").appendChild(alchemyDiv);
+                    if(myCounter==38){
+                        document.getElementById("alchemy").remove()
+                    }
+                    power=true
+                    urlImage = 'url("images/characters/edward/edwardelricSpecAttack2.png")';
+                }else{
+                    power=false
+                    alchemyAttack=false
+                    myCounter=-1
+                    urlImage='url("images/characters/edward/edwardelricBase2.png")' 
+                }
+                myCounter++
+            }
+        }
         function handleJump() {
             if (jump) {
                 y -= jumpSpeed;
@@ -467,7 +499,35 @@ function downloadCSV(filename) {
                 enemyCounter++
             }
         }
-    
+        
+        function enemyAlchemyAttack2(id){
+            if(enemyAlchemy2){
+                if(enemyCounter<2){
+                    enemyUrl='url("images/characters/mustang/roymustangSpecAttack0.png")' 
+                }else if(enemyCounter<4){
+                    enemyUrl='url("images/characters/mustang/royMustangSpecAttack2.png")' 
+                }else if(enemyCounter<6){
+                    enemyUrl='url("images/characters/mustang/royMustangSpecAttack3.png")' 
+                }else if(enemyCounter<8){
+                    /*if(enemyCounter==7 && enemiesList[id].x-x<200){
+                        punched=true
+                        handlePunched()
+                    }*/
+                    enemyUrl='url("images/characters/mustang/royMustangSpecAttack4.png")' 
+                }else if(enemyCounter<20){
+                    enemyUrl='url("images/characters/mustang/royMustangSpecAttack5.png")' 
+                }else if(enemyCounter<22){
+                    enemyUrl='url("images/characters/mustang/royMustangSpecAttack6.png")' 
+                    
+                }else{
+                    enemyCounter=-1
+                    enemyAttack=false
+                    enemyUrl='url("images/characters/mustang/roymustangBase.png")'
+                }
+                enemyCounter++
+            }
+        }
+
         function jumpEnemies(id) {
             enemiesList[id].y -= enemyJumpSpeed;
             if (enemiesList[id].y < 500 && !enemyReachTop) {
@@ -514,8 +574,8 @@ var repaint = setInterval(function () {
             enemyMovePending = false; 
         });
     }*/
-   enemyAlchemy=true
-   enemyAlchemyAttack(0)
+   enemyAlchemy2=true
+   enemyAlchemyAttack2(0)
     attackEnemy(0)
     enemiesPunched(0)
     

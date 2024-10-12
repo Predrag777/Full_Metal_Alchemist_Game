@@ -144,7 +144,7 @@ function downloadCSV(filename) {
 
         var enemySpeed = 20, enemyJumpSpeed = 40, enemyCounter=0;
         var enemyJump = false, enemyReachTop = false;
-        var enemyAttack=false, enemyKick=false , enemyPunched=false
+        var enemyAttack=false, enemyKick=false , enemyPunched=false, enemyAlchemy=false
 
         //Setup helth
         var myHelth=100, myKi=100
@@ -441,7 +441,32 @@ function downloadCSV(filename) {
             return bestMove;
     }
 
-
+        function enemyAlchemyAttack(id){
+            if(enemyAlchemy){
+                if(enemyCounter<2){
+                    enemyUrl='url("images/characters/mustang/roymustangSpecAttack1.png")' 
+                }else if(enemyCounter<4){
+                    enemyUrl='url("images/characters/mustang/roymustangSpecAttack2.png")' 
+                }else if(enemyCounter<6){
+                    enemyUrl='url("images/characters/mustang/roymustangSpecAttack3.png")' 
+                }else if(enemyCounter<8){
+                    /*if(enemyCounter==7 && enemiesList[id].x-x<200){
+                        punched=true
+                        handlePunched()
+                    }*/
+                    enemyUrl='url("images/characters/mustang/roymustangSpecAttack4.png")' 
+                }else if(enemyCounter<20){
+                    enemyUrl='url("images/characters/mustang/roymustangSpecAttack5.png")' 
+                }else if(enemyCounter<22){
+                    enemyUrl='url("images/characters/mustang/roymustangSpecAttack6.png")' 
+                }else{
+                    enemyCounter=-1
+                    enemyAttack=false
+                    enemyUrl='url("images/characters/mustang/roymustangBase.png")'
+                }
+                enemyCounter++
+            }
+        }
     
         function jumpEnemies(id) {
             enemiesList[id].y -= enemyJumpSpeed;
@@ -466,7 +491,7 @@ function downloadCSV(filename) {
         let enemyMovePending = false; 
 
 var repaint = setInterval(function () {
-    if (!enemyMovePending && !enemyAttack && !enemyPunched) {
+    /*if (!enemyMovePending && !enemyAttack && !enemyPunched) {
         enemyMovePending = true; 
         
         getAIAnswer(x, y, enemiesList[0].x, enemiesList[0].y).then(a => {
@@ -488,7 +513,9 @@ var repaint = setInterval(function () {
         }).finally(() => {
             enemyMovePending = false; 
         });
-    }
+    }*/
+   enemyAlchemy=true
+   enemyAlchemyAttack(0)
     attackEnemy(0)
     enemiesPunched(0)
     
